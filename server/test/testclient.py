@@ -3,7 +3,7 @@
 import socket
 
 IP = "127.0.0.1"
-PORT = 55555
+PORT = 55556
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
     # Open a connection to the specified IP/port
