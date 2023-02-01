@@ -159,12 +159,12 @@ def fetch_data_threaded():
                 sun = current_time > sunrise and current_time < sunset
 
                 # Current weather
-                weather_data["temp"]["now"] = str(weather_request["hourly"]["temperature_2m"][weather_offset])
+                weather_data["temp"]["now"] = str(round(weather_request["hourly"]["temperature_2m"][weather_offset]))
                 weather_data["code"]["now"] = weather_lookup(weather_request["hourly"]["weathercode"][weather_offset], sun)
 
                 # Hourly forecast
                 for i in [1, 2, 4, 8]:
-                    weather_data["temp"][f"{i}h"] = str(weather_request["hourly"]["temperature_2m"][weather_offset + i])
+                    weather_data["temp"][f"{i}h"] = str(round(weather_request["hourly"]["temperature_2m"][weather_offset + i]))
                     weather_data["code"][f"{i}h"] = weather_lookup(
                         weather_request["hourly"]["weathercode"][weather_offset + i], sun
                     )
@@ -172,9 +172,9 @@ def fetch_data_threaded():
                 # Daily forecast
                 for i in [1, 2, 3, 4, 5]:
                     weather_data["temp"][f"{i}d"] = (
-                        str(weather_request["daily"]["temperature_2m_min"][i])
+                        str(round(weather_request["daily"]["temperature_2m_min"][i]))
                         + "-"
-                        + str(weather_request["daily"]["temperature_2m_max"][i])
+                        + str(round(weather_request["daily"]["temperature_2m_max"][i]))
                     )
                     weather_data["code"][f"{i}d"] = weather_lookup(weather_request["daily"]["weathercode"][i], True)
 
