@@ -214,6 +214,10 @@ def send_data_threaded(connection, address: str) -> None:
     msg_time = generate_message_time()
     send_message(connection, msg_time)
 
+    # Send weather data
+    msg_weather = generate_message_weather()
+    send_message(connection, msg_weather)
+
     # Wait a little before closing the connection, to facilitate re-sending lost packages
     time.sleep(1)
 
@@ -250,10 +254,7 @@ def generate_message_time() -> str:
         str: The composed message
     """
     # The dashboard only updates once a minute so we don't need the seconds
-    time = datetime.now().strftime("%d-%m-%Y %H:%M")
-
-    # Add the message type as a prefix
-    return f"TIME|{time}"
+    return f"TIME|{datetime.now().strftime('%d-%m-%Y %H:%M')}"
 
 
 def generate_message_weather() -> str:
@@ -263,8 +264,11 @@ def generate_message_weather() -> str:
     Returns:
         str: The composed message
     """
-    # TODO
-    pass
+    # The dashboard only updates once a minute so we don't need the seconds
+    message = "WEATHER"
+    for i in ["now", "1h", '2h', '4h', '8h', '1d', '2d', '3d', '4d', '5d']:
+        message += f"|{weather_data['temp'][i]}|{weather_data['code'][i]}"
+    return message
 
 
 def generate_message_status() -> str:
