@@ -10,7 +10,7 @@ import time
 
 IP = "0.0.0.0"
 PORT = 55556
-FETCH_INTERVAL = 3 * 60  # every 15 minutes
+FETCH_INTERVAL = 15 * 60  # every 15 minutes
 
 weather_data = {
     "code": {
@@ -89,7 +89,7 @@ def main() -> None:
         sck.settimeout(1)
 
         sck.listen()
-        print(f"Started server on {IP}:{PORT}")
+        print_threaded(f"Started server on {IP}:{PORT}")
 
         # Keep listening for connections until a signal is received
         while not stop.is_set():
@@ -193,7 +193,7 @@ def fetch_data_threaded():
                 )
 
             except Exception as ex:
-                print("An exception occured while parsing weather data:\n" + ex)
+                print_threaded("An exception occured while parsing weather data:\n" + ex)
 
         # Sleep until the next interval
         stop.wait(FETCH_INTERVAL)
@@ -234,14 +234,7 @@ def send_message(connection: socket, message: str) -> None:
         connection (socket): Connection to the client
         message (str): Message to send
     """
-    # Determine message length
-    length = format(len(message), "04d")
-
-    # Send the message length so the dashboard knows how many bytes to read
-    print_threaded(f"Sending message length: '{length}'")
-    connection.sendall(length.encode("ascii"))
-
-    # Send the message itself
+    # Send the message to the dashboard using the TCP connection
     print_threaded(f"Sending message: '{message}'")
     connection.sendall(message.encode("ascii"))
 
@@ -254,7 +247,7 @@ def generate_message_time() -> str:
         str: The composed message
     """
     # The dashboard only updates once a minute so we don't need the seconds
-    return f"TIME|{datetime.now().strftime('%d-%m-%Y %H:%M')}"
+    return f"TIME|{datetime.now().strftime('%d-%m-%Y %H:%M')}]"
 
 
 def generate_message_weather() -> str:
@@ -268,7 +261,7 @@ def generate_message_weather() -> str:
     message = "WEATHER"
     for i in ["now", "1h", '2h', '4h', '8h', '1d', '2d', '3d', '4d', '5d']:
         message += f"|{weather_data['temp'][i]}|{weather_data['code'][i]}"
-    return message
+    return message + "]"
 
 
 def generate_message_status() -> str:
